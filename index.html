@@ -284,6 +284,26 @@ footer{text-align:center;padding:36px 24px;border-top:1px solid rgba(201,168,76,
 .rv2{opacity:0;transition:opacity 0.9s ease}
 .rv2.on{opacity:1}
 </style>
+
+<!-- Meta Pixel Code -->
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '2164098424417298');
+  fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=2164098424417298&ev=PageView&noscript=1"/>
+</noscript>
+<!-- End Meta Pixel Code -->
+
+</style>
 </head>
 <body>
 
@@ -635,7 +655,7 @@ footer{text-align:center;padding:36px 24px;border-top:1px solid rgba(201,168,76,
       <div class="review-card cta-card">
         <div class="review-stars" style="opacity:0.3">★★★★★</div>
         <p class="review-cta-text">Be one of the first readers to leave a review</p>
-        <a href="https://www.amazon.in/dp/9357732063" target="_blank" rel="noopener" class="review-link">Write a Review on Amazon →</a>
+        <a href="https://www.amazon.in/dp/9357732063" target="_blank" rel="noopener" class="review-link" onclick="fbq('track', 'ViewContent');">Write a Review on Amazon →</a>
         <a href="https://www.goodreads.com" target="_blank" rel="noopener" class="review-link">Rate on Goodreads →</a>
       </div>
     </div>
@@ -652,13 +672,13 @@ footer{text-align:center;padding:36px 24px;border-top:1px solid rgba(201,168,76,
     <div class="buy-price rv">₹349</div>
     <div class="buy-note rv">Paperback · 147 pages · Ships across India</div>
     <div class="buy-grid rv">
-      <a class="buy-btn primary" href="https://www.amazon.in/dp/9357732063" target="_blank" rel="noopener"><span class="buy-platform">Amazon India</span><span class="buy-price-tag">₹349 + shipping</span></a>
-      <a class="buy-btn" href="https://www.flipkart.com/fear-lost-world-i-cracks-time/p/itm17008a2d5903e?pid=9789357732062" target="_blank" rel="noopener"><span class="buy-platform">Flipkart</span><span class="buy-price-tag">₹349 + shipping</span></a>
-      <a class="buy-btn" href="https://store.pothi.com/book/rahul-dev-fear-lost-world-i/" target="_blank" rel="noopener"><span class="buy-platform">Pothi.com</span><span class="buy-price-tag">₹349</span></a>
+      <a class="buy-btn primary" href="https://www.amazon.in/dp/9357732063" target="_blank" rel="noopener" onclick="fbq('track', 'InitiateCheckout');"><span class="buy-platform">Amazon India</span><span class="buy-price-tag">₹349 + shipping</span></a>
+      <a class="buy-btn" href="https://www.flipkart.com/fear-lost-world-i-cracks-time/p/itm17008a2d5903e?pid=9789357732062" target="_blank" rel="noopener" onclick="fbq('track', 'InitiateCheckout');"><span class="buy-platform">Flipkart</span><span class="buy-price-tag">₹349 + shipping</span></a>
+      <a class="buy-btn" href="https://store.pothi.com/book/rahul-dev-fear-lost-world-i/" target="_blank" rel="noopener" onclick="fbq('track', 'InitiateCheckout');"><span class="buy-platform">Pothi.com</span><span class="buy-price-tag">₹349</span></a>
     </div>
     <div class="buy-divider rv">eBook Edition</div>
     <div class="ebook-grid rv">
-      <a class="ebook-btn" href="https://www.amazon.in/dp/B0G8LWF8SY" target="_blank" rel="noopener"><span class="buy-platform" style="font-size:14px">Amazon Kindle</span><span class="buy-price-tag">Buy eBook</span></a>
+      <a class="ebook-btn" href="https://www.amazon.in/dp/B0G8LWF8SY" target="_blank" rel="noopener" onclick="fbq('track', 'InitiateCheckout');"><span class="buy-platform" style="font-size:14px">Amazon Kindle</span><span class="buy-price-tag">Buy eBook</span></a>
       <a class="ebook-btn soon" href="javascript:void(0)"><span class="buy-platform" style="font-size:14px">Google Play Books</span><span class="buy-price-tag">Coming Soon</span></a>
     </div>
     <p class="buy-guarantee rv">Secure checkout · Printed &amp; shipped by Pothi.com</p>
