@@ -15,6 +15,85 @@
 <meta name="twitter:description" content="Noe vanished between one second and the next. A dark fantasy saga. Available on Amazon India ₹349.">
 <meta name="twitter:image" content="https://rahuldev.in/cover.jpg">
 <title>Fear of the Lost World — Rahul Dev</title>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YNNX5CBZM2"></script>
+<script>
+  /* ── GA4 Base ── */
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-YNNX5CBZM2');
+
+  /* ── UTM capture ── */
+  (function(){
+    var p = new URLSearchParams(window.location.search);
+    var utmFields = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'];
+    var utmData = {};
+    utmFields.forEach(function(k){ if(p.get(k)) utmData[k] = p.get(k); });
+    if(Object.keys(utmData).length){
+      try{ sessionStorage.setItem('utmData', JSON.stringify(utmData)); }catch(e){}
+      gtag('event','utm_captured', utmData);
+    }
+  })();
+
+  /* ── Time on page ── */
+  var _pageStart = Date.now();
+  window.addEventListener('beforeunload', function(){
+    var seconds = Math.round((Date.now() - _pageStart) / 1000);
+    gtag('event', 'time_on_page', {
+      event_category: 'Engagement',
+      event_label: 'seconds_spent',
+      value: seconds
+    });
+  });
+
+  /* ── Scroll depth ── */
+  (function(){
+    var fired = {};
+    var thresholds = [25, 50, 75, 90, 100];
+    function getScrollPct(){
+      var el = document.documentElement;
+      var scrollTop = window.pageYOffset || el.scrollTop;
+      var total = el.scrollHeight - el.clientHeight;
+      return total > 0 ? Math.round((scrollTop / total) * 100) : 0;
+    }
+    function onScroll(){
+      var pct = getScrollPct();
+      thresholds.forEach(function(t){
+        if(pct >= t && !fired[t]){
+          fired[t] = true;
+          gtag('event', 'scroll_depth', {
+            event_category: 'Engagement',
+            event_label: t + '%',
+            value: t
+          });
+        }
+      });
+    }
+    window.addEventListener('scroll', onScroll, {passive: true});
+  })();
+
+  /* ── Button click events ── */
+  document.addEventListener('DOMContentLoaded', function(){
+    var buttons = [
+      { selector: 'a[href*="amazon.in/dp/9357732063"]',  label: 'Amazon Paperback'  },
+      { selector: 'a[href*="flipkart.com"]',             label: 'Flipkart'          },
+      { selector: 'a[href*="amazon.in/dp/B0G8LWF8SY"]', label: 'Amazon Kindle'     },
+      { selector: 'a[href*="pothi.com"]',                label: 'Pothi'             }
+    ];
+    buttons.forEach(function(b){
+      document.querySelectorAll(b.selector).forEach(function(el){
+        el.addEventListener('click', function(){
+          gtag('event', 'buy_button_click', {
+            event_category: 'Purchase',
+            event_label: b.label,
+            value: 1
+          });
+        });
+      });
+    });
+  });
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
