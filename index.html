@@ -18,20 +18,33 @@
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-YNNX5CBZM2"></script>
 <script>
-  /* ── GA4 Base ── */
+  /* ════════════════════════════════════════
+     GA4 — FEAR OF THE LOST WORLD TRACKING
+     ════════════════════════════════════════ */
+
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-YNNX5CBZM2');
 
-  /* ── UTM capture ── */
+  /* ── Returning visitor detection ── */
+  var _isReturning = false;
+  try {
+    _isReturning = !!localStorage.getItem('fotlw_visited');
+    localStorage.setItem('fotlw_visited', '1');
+  } catch(e){}
+
+  gtag('config', 'G-YNNX5CBZM2', {
+    user_properties: { visitor_type: _isReturning ? 'returning' : 'new' }
+  });
+
+  /* ── UTM capture (saved across page) ── */
   (function(){
     var p = new URLSearchParams(window.location.search);
-    var utmFields = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'];
+    var fields = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'];
     var utmData = {};
-    utmFields.forEach(function(k){ if(p.get(k)) utmData[k] = p.get(k); });
+    fields.forEach(function(k){ if(p.get(k)) utmData[k] = p.get(k); });
     if(Object.keys(utmData).length){
-      try{ sessionStorage.setItem('utmData', JSON.stringify(utmData)); }catch(e){}
+      try{ localStorage.setItem('fotlw_utm', JSON.stringify(utmData)); }catch(e){}
       gtag('event','utm_captured', utmData);
     }
   })();
@@ -42,7 +55,7 @@
     var seconds = Math.round((Date.now() - _pageStart) / 1000);
     gtag('event', 'time_on_page', {
       event_category: 'Engagement',
-      event_label: 'seconds_spent',
+      event_label: _isReturning ? 'returning_visitor' : 'new_visitor',
       value: seconds
     });
   });
@@ -51,14 +64,13 @@
   (function(){
     var fired = {};
     var thresholds = [25, 50, 75, 90, 100];
-    function getScrollPct(){
+    function getPct(){
       var el = document.documentElement;
-      var scrollTop = window.pageYOffset || el.scrollTop;
       var total = el.scrollHeight - el.clientHeight;
-      return total > 0 ? Math.round((scrollTop / total) * 100) : 0;
+      return total > 0 ? Math.round((window.pageYOffset / total) * 100) : 0;
     }
-    function onScroll(){
-      var pct = getScrollPct();
+    window.addEventListener('scroll', function(){
+      var pct = getPct();
       thresholds.forEach(function(t){
         if(pct >= t && !fired[t]){
           fired[t] = true;
@@ -69,29 +81,108 @@
           });
         }
       });
-    }
-    window.addEventListener('scroll', onScroll, {passive: true});
+    }, {passive: true});
   })();
 
-  /* ── Button click events ── */
+  /* ── Section view time tracking ── */
+  /* Fires when user enters a section + how long they stayed when they leave */
   document.addEventListener('DOMContentLoaded', function(){
-    var buttons = [
-      { selector: 'a[href*="amazon.in/dp/9357732063"]',  label: 'Amazon Paperback'  },
-      { selector: 'a[href*="flipkart.com"]',             label: 'Flipkart'          },
-      { selector: 'a[href*="amazon.in/dp/B0G8LWF8SY"]', label: 'Amazon Kindle'     },
-      { selector: 'a[href*="pothi.com"]',                label: 'Pothi'             }
+
+    var sections = [
+      { id: 'hero',       label: 'Hero'         },
+      { id: 'story',      label: 'Story'        },
+      { id: 'characters', label: 'Characters'   },
+      { id: 'excerpt',    label: 'Excerpt'      },
+      { id: 'reviews',    label: 'Reviews'      },
+      { id: 'buy',        label: 'Buy Section'  }
     ];
+
+    var sectionTimers = {};
+
+    var sectionObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        var label = entry.target.dataset.trackLabel;
+        if(!label) return;
+
+        if(entry.isIntersecting){
+          /* Section entered */
+          sectionTimers[label] = Date.now();
+          gtag('event', 'section_view', {
+            event_category: 'Section Engagement',
+            event_label: label
+          });
+        } else if(sectionTimers[label]){
+          /* Section left — fire time spent */
+          var spent = Math.round((Date.now() - sectionTimers[label]) / 1000);
+          if(spent >= 2){ /* ignore flash-bys under 2s */
+            gtag('event', 'section_time', {
+              event_category: 'Section Engagement',
+              event_label: label,
+              value: spent
+            });
+          }
+          delete sectionTimers[label];
+        }
+      });
+    }, { threshold: 0.4 });
+
+    sections.forEach(function(s){
+      var el = document.getElementById(s.id);
+      if(el){
+        el.dataset.trackLabel = s.label;
+        sectionObserver.observe(el);
+      }
+    });
+
+    /* ── Buy button clicks — which store ── */
+    var buttons = [
+      { selector: 'a[href*="amazon.in/dp/9357732063"]',  label: 'Amazon_Paperback' },
+      { selector: 'a[href*="flipkart.com"]',             label: 'Flipkart'         },
+      { selector: 'a[href*="amazon.in/dp/B0G8LWF8SY"]', label: 'Amazon_Kindle'    },
+      { selector: 'a[href*="pothi.com"]',                label: 'Pothi'            }
+    ];
+
     buttons.forEach(function(b){
       document.querySelectorAll(b.selector).forEach(function(el){
         el.addEventListener('click', function(){
           gtag('event', 'buy_button_click', {
-            event_category: 'Purchase',
+            event_category: 'Purchase Intent',
             event_label: b.label,
+            visitor_type: _isReturning ? 'returning' : 'new',
             value: 1
           });
         });
       });
     });
+
+    /* ── Nav "Get the Book" button ── */
+    document.querySelectorAll('.nav-btn').forEach(function(el){
+      el.addEventListener('click', function(){
+        gtag('event', 'nav_cta_click', {
+          event_category: 'Navigation',
+          event_label: 'Get the Book — Nav'
+        });
+      });
+    });
+
+    /* ── Final CTA button ── */
+    document.querySelectorAll('.final .btn-primary').forEach(function(el){
+      el.addEventListener('click', function(){
+        gtag('event', 'final_cta_click', {
+          event_category: 'Purchase Intent',
+          event_label: 'Final CTA — Get the Book Now'
+        });
+      });
+    });
+
+    /* ── Returning visitor event ── */
+    if(_isReturning){
+      gtag('event', 'returning_visitor', {
+        event_category: 'Audience',
+        event_label: 'Came back to the page'
+      });
+    }
+
   });
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
